@@ -1,6 +1,7 @@
 #include "CollBench/errors.h"
 #include "CollBench/init.h"
 #include "bench/bcast.h"
+#include "bench/gather.h"
 #include <mpi.h>
 
 int main(void) {
@@ -10,6 +11,7 @@ int main(void) {
     CB_init();
 
     CB_CHECK(CA_bench_bine_bcast_dhlv(), cleanup);
+    CB_CHECK(CA_bench_bine_gatherv(), cleanup);
 
     cleanup:
         CB_finalize();
