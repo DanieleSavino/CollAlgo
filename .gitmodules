@@ -1,0 +1,3 @@
+[submodule "vendor/CollBench"]
+	path = vendor/CollBench
+	url = https://github.com/DanieleSavino/CollBench.git

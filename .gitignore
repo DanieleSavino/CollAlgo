@@ -1,0 +1,12 @@
+# Build artifacts
+build/
+out/
+.cache/
+
+# Plots
+*.png
+
+# Python
+__pycache__/
+*.pyc
+.venv/

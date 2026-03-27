@@ -1,0 +1,46 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iinclude",
+      "-Ivendor/CollBench/include",
+      "-O3",
+      "-march=native",
+      "-DNDEBUG",
+      "-DCB_PROFILE",
+      "-c",
+      "-I/usr/include",
+      "-o",
+      "build/obj/bcast.o",
+      "src/bcast.c"
+    ],
+    "directory": "/home/daniele/dev/CollAlgo",
+    "file": "/home/daniele/dev/CollAlgo/src/bcast.c",
+    "output": "/home/daniele/dev/CollAlgo/build/obj/bcast.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iinclude",
+      "-Ivendor/CollBench/include",
+      "-O3",
+      "-march=native",
+      "-DNDEBUG",
+      "-DCB_PROFILE",
+      "-c",
+      "-I/usr/include",
+      "-o",
+      "build/obj/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/daniele/dev/CollAlgo",
+    "file": "/home/daniele/dev/CollAlgo/src/main.c",
+    "output": "/home/daniele/dev/CollAlgo/build/obj/main.o"
+  }
+]
