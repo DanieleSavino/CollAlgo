@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define BUFF_LEN 100
+#define BUFF_LEN 10
 #define ROOT 0
 
 CB_Error_t CA_bench_bine_gatherv(void) {
@@ -30,15 +30,26 @@ CB_Error_t CA_bench_bine_gatherv(void) {
         CB_MALLOC(rbuff, (displs[size - 1] + counts[size - 1]) * sizeof(int), cleanup);
     }
 
-    for(int i = 0; i < BUFF_LEN; i++) {
+    for(int i = 0; i < counts[rank]; i++) {
         buff[i] = i;
+    }
+
+    if(rank == ROOT) {
+        for(int i = 0; i < displs[size - 1] + counts[size - 1]; i++) {
+            rbuff[i] = 100;
+        }
     }
 
     MPI_CHECK(CA_bine_gatherv(buff, counts[rank], MPI_INT, rbuff, counts, displs, MPI_INT, ROOT, MPI_COMM_WORLD), cleanup);
 
-    for(int i = 0; i < BUFF_LEN; i++) {
-        if(buff[i] != i % BUFF_LEN) {
-            return CB_ERR_MPI;
+    if(rank == ROOT) {
+        for(int r = 0; r < size; r++) {
+            for(int i = 0; i < counts[r]; i++) {
+                int idx = displs[r] + i;
+                if(rbuff[idx] != i) {
+                    MPI_Abort(MPI_COMM_WORLD, 12);
+                }
+            }
         }
     }
 
