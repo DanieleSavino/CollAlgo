@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define BUFF_LEN 10
+#define BUFF_LEN 100
 #define ROOT 0
 
 CB_Error_t CA_bench_bine_gatherv(void) {
