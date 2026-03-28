@@ -110,7 +110,7 @@ vendor:
 
 # ── Clean ─────────────────────────────────────────────────────────────────────
 clean:
-	rm -rf $(BUILD_DIR) compile_commands.json
+	rm -rf $(BUILD_DIR)
 
 clean-vendor:
 	$(MAKE) -C $(VENDOR_DIR) clean

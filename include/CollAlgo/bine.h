@@ -17,11 +17,3 @@ static inline int CA_nb2rank(int32_t nb, int bits) {
     return val & (size - 1);
 }
 
-static inline int CA_mod(int a, int b){
-    int r = a % b;
-    return r < 0 ? r + b : r;
-}
-
-static inline int CA_is_pow_2(int num) {
-    return num > 0 && (num & (num - 1)) == 0;
-}
