@@ -1,5 +1,6 @@
 #include "CollAlgo/gather.h"
 #include "CollAlgo/bine.h"
+#include "CollAlgo/utils.h"
 #include "CollBench/dist_list.h"
 #include "CollBench/init.h"
 #include <assert.h>
@@ -21,8 +22,12 @@ int CA_bine_gatherv(const void *sendbuff, int sendcount, MPI_Datatype sendtype, 
     MPI_Comm_size(comm, &size);
     MPI_Type_size(sendtype, &dtsize);
 
+    if(!CA_is_pow_2(size)) {
+        return MPI_ERR_ASSERT;
+    }
+
     if (rank != root)
-        recvbuff = malloc(dtsize * (displs[size - 1] + recvcounts[size - 1]));
+        CA_MALLOC(recvbuff, dtsize * (displs[size - 1] + recvcounts[size - 1]));
 
     memcpy((char*) recvbuff + (displs[rank] * dtsize), sendbuff, sendcount * dtsize);
 
@@ -145,8 +150,12 @@ int CA_bine_gather(const void *sendbuff, int sendcount, MPI_Datatype sendtype, v
     MPI_Comm_size(comm, &size);
     MPI_Type_size(sendtype, &dtsize);
 
+    if(!CA_is_pow_2(size)) {
+        return MPI_ERR_ASSERT;
+    }
+
     if (rank != root)
-        recvbuff = malloc(size * dtsize * recvcount);
+        CA_MALLOC(recvbuff, size * dtsize * recvcount);
 
     memcpy((char*) recvbuff + (rank * recvcount * dtsize), sendbuff, sendcount * dtsize);
 

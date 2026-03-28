@@ -1,5 +1,6 @@
 #include "CollAlgo/bcast.h"
 #include "CollAlgo/bine.h"
+#include "CollAlgo/utils.h"
 #include "CollBench/dist_list.h"
 #include "CollBench/init.h"
 #include <math.h>
