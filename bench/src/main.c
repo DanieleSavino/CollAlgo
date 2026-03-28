@@ -12,6 +12,7 @@ int main(void) {
 
     CB_CHECK(CA_bench_bine_bcast_dhlv(), cleanup);
     CB_CHECK(CA_bench_bine_gatherv(), cleanup);
+    CB_CHECK(CA_bench_bine_gather(), cleanup);
 
     cleanup:
         CB_finalize();

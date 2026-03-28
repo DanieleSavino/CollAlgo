@@ -36,7 +36,7 @@ CB_Error_t CA_bench_bine_gatherv(void) {
 
     if(rank == ROOT) {
         for(int i = 0; i < displs[size - 1] + counts[size - 1]; i++) {
-            rbuff[i] = 100;
+            rbuff[i] = -1;
         }
     }
 
@@ -58,5 +58,44 @@ CB_Error_t CA_bench_bine_gatherv(void) {
         free(buff);
         free(counts);
         free(displs);
+        return err;
+}
+
+CB_Error_t CA_bench_bine_gather(void) {
+    CB_Error_t err = CB_SUCCESS;
+
+    int rank, size, *buff = NULL, *rbuff = NULL;
+    MPI_CHECK(MPI_Comm_rank(MPI_COMM_WORLD, &rank), cleanup);
+    MPI_CHECK(MPI_Comm_size(MPI_COMM_WORLD, &size), cleanup);
+
+    CB_MALLOC(buff, BUFF_LEN * sizeof(int), cleanup);
+
+    if(rank == ROOT) {
+        CB_MALLOC(rbuff, (BUFF_LEN * size) * sizeof(int), cleanup);
+    }
+
+    for(int i = 0; i < BUFF_LEN; i++) {
+        buff[i] = i;
+    }
+
+    if(rank == ROOT) {
+        for(int i = 0; i < BUFF_LEN * size; i++) {
+            rbuff[i] = -1;
+        }
+    }
+
+    MPI_CHECK(CA_bine_gather(buff, BUFF_LEN, MPI_INT, rbuff, BUFF_LEN, MPI_INT, ROOT, MPI_COMM_WORLD), cleanup);
+
+    if(rank == ROOT) {
+        for(int i = 0; i < BUFF_LEN * size; i++) {
+            if(rbuff[i] != i % BUFF_LEN) {
+                MPI_Abort(MPI_COMM_WORLD, 12);
+            }
+        }
+    }
+
+    cleanup:
+        free(rbuff);
+        free(buff);
         return err;
 }
