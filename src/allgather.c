@@ -87,7 +87,7 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
         step++;
     }
 
-    CB_COLL_END(comm, 0, "out/bine_allgather_b2b.json");
+    CB_COLL_END(comm, 0, "out/butterfly/bine_allgather_b2b.json");
 
     return MPI_SUCCESS;
 }

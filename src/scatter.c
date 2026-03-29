@@ -154,7 +154,7 @@ int CA_bine_scatterv(const void *sendbuff, int *sendcounts, const int *displs, M
 
     if(tmpbuff != NULL) free(tmpbuff);
 
-    CB_COLL_END(comm, root, "out/bine_scatterv.json");
+    CB_COLL_END(comm, root, "out/tree/bine_scatterv.json");
     return MPI_SUCCESS;
 }
 
@@ -345,7 +345,7 @@ int CA_bine_scatter(const void *sendbuff, int sendcount, MPI_Datatype sendtype, 
 
     free(tmpbuff);
 
-    CB_COLL_END(comm, root, "out/bine_scatter.json");
+    CB_COLL_END(comm, root, "out/tree/bine_scatter.json");
 
     return MPI_SUCCESS;
 }
