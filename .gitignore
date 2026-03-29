@@ -5,10 +5,11 @@ out/
 
 # Plots
 *.png
+!plots/**/*.png
+!plots/*.png
 
 # Python
 __pycache__/
 *.pyc
 .venv/
-
 *.json

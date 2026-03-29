@@ -5,7 +5,8 @@
 #include <mpi.h>
 #include <stdlib.h>
 
-#define BUFF_LEN 2
+//FIXME: Should implement non-blocking abstract ops before incrementing buff_len
+#define BUFF_LEN 125 // 1,000 elems after allgather
 
 CB_Error_t CA_bench_bine_allgather(void) {
     CB_Error_t err = CB_SUCCESS;

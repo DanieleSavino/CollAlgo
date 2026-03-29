@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define BUFF_LEN 100
+#define BUFF_LEN 100000
 #define ROOT 0
 
 CB_Error_t CA_bench_bine_bcast_dhlv(void) {

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BUFF_SIZE 4
+#define BUFF_SIZE 100000
 #define ROOT      0
 
 CB_Error_t CA_bench_bine_scatterv(void) {
