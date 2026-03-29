@@ -134,7 +134,7 @@ int CA_bine_gatherv(const void *sendbuff, int sendcount, MPI_Datatype sendtype, 
     if (rank != root)
         free(recvbuff);
 
-    CB_COLL_END(comm, root, "out/bine_gatherv.json");
+    CB_COLL_END(comm, root, "out/tree/bine_gatherv.json");
 
     return MPI_SUCCESS;
 }
@@ -262,7 +262,7 @@ int CA_bine_gather(const void *sendbuff, int sendcount, MPI_Datatype sendtype, v
     if (rank != root)
         free(recvbuff);
 
-    CB_COLL_END(comm, root, "out/bine_gather.json");
+    CB_COLL_END(comm, root, "out/tree/bine_gather.json");
 
     return MPI_SUCCESS;
 }
