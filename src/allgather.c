@@ -6,7 +6,6 @@
 #include <assert.h>
 #include <mpi.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <string.h>
 
 int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype sendtype, void *recvbuff, int recvcount, MPI_Datatype recvtype, MPI_Comm comm) {
@@ -28,10 +27,13 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
 
     memcpy((char*) recvbuff + rank * recvcount * dtsize, sendbuff, sendcount * dtsize);
 
+    int req_idx = 0;
+    MPI_Request *reqs = NULL;
+    CA_MALLOC(reqs, size * 2 * sizeof(MPI_Request));
+
     int s = CA_log2(size);
     int inv_mask = 1 << (s - 1);
     int step = 0;
-
 
     while (inv_mask > 0) {
         int peer;
@@ -63,30 +65,35 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
                 int peer_send = (b2send != peer) ? peer : MPI_PROC_NULL;
                 int peer_recv = (b2recv != rank) ? peer : MPI_PROC_NULL;
 
-                CB_LSEND(
+                CB_ILSEND(
                     rank,
                     step,
                     (char*)recvbuff + (b2send * sendcount * dtsize),
                     sendcount,
                     sendtype,
                     peer_send,
-                    0, comm
+                    0, comm, &reqs[req_idx++]
                 );
 
-                CB_LRECV(
+                CB_ILRECV(
                     rank,
                     step,
                     (char*)recvbuff + (b2recv * recvcount * dtsize),
                     recvcount,
                     recvtype,
                     peer_recv,
-                    0, comm
+                    0, comm, &reqs[req_idx++]
                 );
             }
         }
         inv_mask >>= 1;
         step++;
+
+        CB_LWAITALL(reqs, req_idx);
+        req_idx = 0;
     }
+
+    free(reqs);
 
     CB_COLL_END(comm, 0, "out/butterfly/bine_allgather_b2b.json");
 
