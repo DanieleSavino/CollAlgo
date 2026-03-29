@@ -1,5 +1,6 @@
 #include "CollBench/errors.h"
 #include "CollBench/init.h"
+#include "bench/allgather.h"
 #include "bench/bcast.h"
 #include "bench/gather.h"
 #include "bench/scatter.h"
@@ -11,11 +12,12 @@ int main(void) {
     MPI_Init(NULL, NULL);
     CB_init();
 
-    CB_CHECK(CA_bench_bine_bcast_dhlv(), cleanup);
-    CB_CHECK(CA_bench_bine_gatherv(), cleanup);
-    CB_CHECK(CA_bench_bine_gather(), cleanup);
-    CB_CHECK(CA_bench_bine_scatter(), cleanup);
-    CB_CHECK(CA_bench_bine_scatterv(), cleanup);
+    // CB_CHECK(CA_bench_bine_bcast_dhlv(), cleanup);
+    // CB_CHECK(CA_bench_bine_gatherv(), cleanup);
+    // CB_CHECK(CA_bench_bine_gather(), cleanup);
+    // CB_CHECK(CA_bench_bine_scatter(), cleanup);
+    // CB_CHECK(CA_bench_bine_scatterv(), cleanup);
+    CB_CHECK(CA_bench_bine_allgather(), cleanup);
 
     cleanup:
         CB_finalize();
