@@ -122,3 +122,46 @@ static inline uint32_t CA_nu(uint32_t rank, uint32_t size) {
     }
   }
 }
+
+static inline uint32_t CA_nb2rank_wrap(uint32_t num_ranks, uint32_t rank){
+    CA_nb2rank_raw(rank);
+    uint32_t nba = UINT32_MAX, nbb = UINT32_MAX;
+    size_t num_bits = CA_log2(num_ranks);
+    if(rank % 2){
+        if(CA_in_bine_range(rank, num_bits)){
+            nba = CA_rank2nb_raw(rank);
+        }
+        if(CA_in_bine_range(rank - num_ranks, num_bits)){
+            nbb = CA_rank2nb_raw(rank - num_ranks);
+        }
+    }else{
+        if(CA_in_bine_range(-rank, num_bits)){
+            nba = CA_rank2nb_raw(-rank);
+        }
+        if(CA_in_bine_range(-rank + num_ranks, num_bits)){
+            nbb = CA_rank2nb_raw(-rank + num_ranks);
+        }
+    }
+
+    assert(nba != UINT32_MAX || nbb != UINT32_MAX);
+
+    if(nba == UINT32_MAX && nbb != UINT32_MAX){
+        return nbb;
+    }else if(nba != UINT32_MAX && nbb == UINT32_MAX){
+        return nba;
+    }else{ // Check MSB
+        if(nba & (80000000 >> (32 - num_bits))){
+            return nba;
+        }else{
+            return nbb;
+        }
+    }
+}
+
+static inline uint32_t CA_remap_rank(uint32_t num_ranks, uint32_t rank) {
+    uint32_t remap_rank = CA_nb2rank_wrap(num_ranks, rank);
+    remap_rank = remap_rank ^ (remap_rank >> 1);
+    size_t num_bits = CA_log2(num_ranks);
+    remap_rank = CA_reverse32(remap_rank) >> (32 - num_bits);
+    return remap_rank;
+}
