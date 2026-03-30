@@ -26,3 +26,9 @@ static inline void CA_print_rank_buff(const int *arr, const char *label, int len
         printf("%d ", arr[i]);
     printf("\n");
 }
+
+static inline void CA_root_print(const char *msg, int rank, int root) {
+    if(rank == root) {
+        printf("%s\n", msg);
+    }
+}

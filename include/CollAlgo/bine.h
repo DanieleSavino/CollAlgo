@@ -165,3 +165,17 @@ static inline uint32_t CA_remap_rank(uint32_t num_ranks, uint32_t rank) {
     remap_rank = CA_reverse32(remap_rank) >> (32 - num_bits);
     return remap_rank;
 }
+
+static inline uint32_t CA_mersenne(int n) {
+    return (1UL << (n + 1)) - 1;
+}
+
+static inline int CA_remap_ddbl(uint32_t num) {
+    int remapped = 0;
+    while (num > 0) {
+        int k = 31 - __builtin_clz(num); // Find the position of the highest set bit
+        remapped ^= (0x1 << k); // Set the k-th bit in the remapped number
+        num ^= CA_mersenne(k); // XOR the Mersenne number with the remaining number
+    }
+    return remapped;
+}

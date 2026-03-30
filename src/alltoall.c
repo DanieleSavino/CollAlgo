@@ -5,6 +5,7 @@
 #include "CollBench/init.h"
 #include <assert.h>
 #include <mpi.h>
+#include <stddef.h>
 #include <string.h>
 #include <sys/types.h>
 
@@ -62,7 +63,7 @@ int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype,
 
         int recv_blocks = 0, send_blocks = 0;
         int off_send = 0, off_keep = 0;
-        block_next = 0;
+        num_blocks_next = 0;
         for(int i = 0; i < size; i++) {
             unsigned int b = block[i % num_blocks];
 
@@ -71,7 +72,7 @@ int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype,
 
             // Move the blocks to keep at the beginning of tmpbuff
             // and the ones i want to send to recvbuff
-            if(remap_b >= min_block_s && remap_b <= max_block_s) {
+            if(remap_b >= (unsigned int)min_block_s && remap_b <= (unsigned int)max_block_s) {
                 memcpy((char*) recvbuff + off_send, tmpbuff + off, sbuff_size);
                 off_send += sbuff_size;
                 send_blocks++;
@@ -92,10 +93,47 @@ int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype,
         assert(send_blocks == size/2);
         num_blocks /= 2;
 
-        CB_ILSEND(rank, CA_log2(recv_blocks), buff, count, datatype, dest, tag, comm, req_ref)
+        MPI_Request reqs[2];
+        CB_ILSEND(rank, CA_log2(recv_blocks), recvbuff, sendcount * send_blocks, sendtype, peer, 0, comm, &reqs[0]);
+        CB_ILRECV(rank, CA_log2(recv_blocks), tmpbuff + (size / 2) * sbuff_size, recvcount * send_blocks, recvtype, peer, 0, comm, &reqs[1]);
+
+        CB_LWAITALL(reqs, 2);
+
+        memcpy(block, block_next, num_blocks * sizeof(unsigned int));
+
+        mask <<= 1;
+        inv_mask >>= 1;
+        block_first_mask >>= 1;
     }
 
+    for(int i = 0; i < size; i++) {
+        int rot_i = 0;
+        if(rank % 2 == 0) {
+            rot_i = CA_mod(i - rank, size);
+        }
+        else {
+            rot_i = CA_mod(rank - i, size);
+        }
 
+        int repr = 0;
+        if(CA_in_bine_range(rot_i, CA_log2(size))) {
+            repr = CA_rank2nb_raw(rot_i);
+        }
+        else {
+            repr = CA_rank2nb_raw(rot_i - size);
+        }
+
+        int idx = CA_remap_ddbl(repr);
+
+        int off_src = idx * sbuff_size;
+        int off_dest = i * sbuff_size;
+
+        memcpy((char*) recvbuff + off_dest, tmpbuff + off_src, sbuff_size);
+    }
+
+    free(tmpbuff);
 
     CB_COLL_END(comm, 0, "out/butterfly/bine_alltoall.json");
+
+    return MPI_SUCCESS;
 }

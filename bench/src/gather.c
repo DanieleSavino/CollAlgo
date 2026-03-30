@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BUFF_LEN 12500 // 100,000 elems after gather
+#define BUFF_LEN 12500 // 100,000 elems after gather for 8 ranks
 #define ROOT     0
 
 CB_Error_t CA_bench_bine_gatherv(void) {
