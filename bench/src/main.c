@@ -7,7 +7,6 @@
 #include "bench/gather.h"
 #include "bench/scatter.h"
 #include <mpi.h>
-#include <stdio.h>
 
 int main(void) {
     CB_Error_t err = CB_SUCCESS;

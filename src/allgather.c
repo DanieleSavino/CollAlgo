@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <mpi.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 
 int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype sendtype, void *recvbuff, int recvcount, MPI_Datatype recvtype, MPI_Comm comm) {
@@ -62,8 +63,13 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
                     b2send = CA_mod(peer + block, size);
                 }
 
+                // TODO: Why?
                 int peer_send = (b2send != peer) ? peer : MPI_PROC_NULL;
                 int peer_recv = (b2recv != rank) ? peer : MPI_PROC_NULL;
+
+                if(peer_send == MPI_PROC_NULL || peer_recv == MPI_PROC_NULL) {
+                    printf("NULL trovato \n\n\n");
+                }
 
                 CB_ILSEND(
                     rank,
@@ -89,13 +95,14 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
         inv_mask >>= 1;
         step++;
 
+
         CB_LWAITALL(reqs, req_idx);
         req_idx = 0;
     }
 
     free(reqs);
 
-    CB_COLL_END(comm, 0, "out/butterfly/bine_allgather_b2b.json");
+    CB_COLL_END(comm, rank, 0, "out/butterfly/bine_allgather_b2b.json");
 
     return MPI_SUCCESS;
 }

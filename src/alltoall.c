@@ -133,7 +133,7 @@ int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype,
 
     free(tmpbuff);
 
-    CB_COLL_END(comm, 0, "out/butterfly/bine_alltoall.json");
+    CB_COLL_END(comm, rank, 0, "out/butterfly/bine_alltoall.json");
 
     return MPI_SUCCESS;
 }
