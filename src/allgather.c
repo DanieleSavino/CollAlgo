@@ -67,10 +67,6 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
                 int peer_send = (b2send != peer) ? peer : MPI_PROC_NULL;
                 int peer_recv = (b2recv != rank) ? peer : MPI_PROC_NULL;
 
-                if(peer_send == MPI_PROC_NULL || peer_recv == MPI_PROC_NULL) {
-                    printf("NULL trovato \n\n\n");
-                }
-
                 CB_ILSEND(
                     rank,
                     step,
