@@ -16,12 +16,14 @@ int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype,
     assert(sendcount == recvcount);
     assert(sendtype == recvtype);
 
-    //TODO: check non pow of 2
-
     int rank, size, dtsize;
     MPI_Comm_rank(comm, &rank);
     MPI_Comm_size(comm, &size);
     MPI_Type_size(sendtype, &dtsize);
+
+    if(!CA_is_pow_2(size)) {
+        return MPI_ERR_ASSERT;
+    }
 
     int num_blocks = size;
     int num_blocks_next = 0;
@@ -48,7 +50,8 @@ int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype,
     int block_first_mask = ~(inv_mask - 1);
 
     while (mask < size) {
-        int lsbs = CA_nb2rank_raw((mask << 1) - 1);
+        int mask_lsbs = (mask << 1) - 1;
+        int lsbs = CA_nb2rank_raw(mask_lsbs);
 
         int peer;
         if(rank % 2 == 0) {
@@ -94,8 +97,8 @@ int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype,
         num_blocks /= 2;
 
         MPI_Request reqs[2];
-        CB_ILSEND(rank, CA_log2(recv_blocks), recvbuff, sendcount * send_blocks, sendtype, peer, 0, comm, &reqs[0]);
-        CB_ILRECV(rank, CA_log2(recv_blocks), tmpbuff + (size / 2) * sbuff_size, recvcount * send_blocks, recvtype, peer, 0, comm, &reqs[1]);
+        CB_ILSEND(rank, CA_log2(size) - __builtin_popcount(mask_lsbs), recvbuff, sendcount * send_blocks, sendtype, peer, 0, comm, &reqs[0]);
+        CB_ILRECV(rank, CA_log2(size) - __builtin_popcount(mask_lsbs), tmpbuff + (size / 2) * sbuff_size, recvcount * send_blocks, recvtype, peer, 0, comm, &reqs[1]);
 
         CB_LWAITALL(reqs, 2);
 
