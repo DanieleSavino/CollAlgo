@@ -26,9 +26,11 @@ int CA_bine_gatherv(const void *sendbuff, int sendcount, MPI_Datatype sendtype, 
         return MPI_ERR_ASSERT;
     }
 
+    // Allocate full buffer data
     if (rank != root)
         CA_MALLOC(recvbuff, dtsize * (displs[size - 1] + recvcounts[size - 1]));
 
+    // Copy the local data into the recvbuff
     memcpy((char*) recvbuff + (displs[rank] * dtsize), sendbuff, sendcount * dtsize);
 
     int s = log2(size);
@@ -40,15 +42,29 @@ int CA_bine_gatherv(const void *sendbuff, int sendcount, MPI_Datatype sendtype, 
 
     int mask = 0x1;
     while (mask < size) {
+
+        /**
+         * INFO: Distance doubling pattern:
+         * We keep xor-ing with increasing masks of ones
+         * (rank ^ 0b1, rank ^ 0b11, rank ^ 0b111, ...)
+         * so peer is the rank that differs by step least signicant bits
+         */
         int mask_peer = (mask << 1) - 1;
         int nb_peer = nb_rank ^ mask_peer;
         int mod_peer = CA_nb2rank(nb_peer, s);
         int peer = CA_mod(mod_peer + root, size);
 
+        /**
+         * INFO: We use a << 2 mask as we want to skip the recv of leaves.
+         */
         int mask_lsbs = (mask << 2) - 1;
         int lsbs = nb_rank & mask_lsbs;
         int eq_lsbs = (lsbs == 0 || lsbs == mask_lsbs);
-
+        
+        /**
+         * INFO: If next iteration i will be root of my subtree then i send and exit else i recv,
+         * as the communication is offsetted by 1 as we do not consider actual leaves as step = 0 roots
+         */
         if (!eq_lsbs || ((mask << 1) >= size && (rank != root))) {
             if (max_block >= min_block) {
                 /* Non-wrapped: contiguous range [min_block, max_block] */
@@ -134,7 +150,7 @@ int CA_bine_gatherv(const void *sendbuff, int sendcount, MPI_Datatype sendtype, 
     if (rank != root)
         free(recvbuff);
 
-    CB_COLL_END(comm, root, "out/tree/bine_gatherv.json");
+    CB_COLL_END(comm, rank, root, "out/tree/bine_gatherv.json");
 
     return MPI_SUCCESS;
 }
@@ -262,7 +278,7 @@ int CA_bine_gather(const void *sendbuff, int sendcount, MPI_Datatype sendtype, v
     if (rank != root)
         free(recvbuff);
 
-    CB_COLL_END(comm, root, "out/tree/bine_gather.json");
+    CB_COLL_END(comm, rank, root, "out/tree/bine_gather.json");
 
     return MPI_SUCCESS;
 }

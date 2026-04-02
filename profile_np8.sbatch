@@ -41,6 +41,7 @@ for json in out/butterfly/*.json; do
         python3 ./scripts/butterfly.py "$json" \
             --mode "$mode" \
             --out "plots/${base}/${base}_${mode}.png" \
+            --dpi 600 \
             --palette "$PALETTE" \
             --bg "$BG" \
             --node-color "$NODE_COLOR" \
