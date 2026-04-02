@@ -69,9 +69,9 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
                     b2send = CA_mod(peer + block, size);
                 }
 
-		int peer_recv = peer;
-		int peer_send = peer;
-
+                // TODO: Why?
+                int peer_send = (b2send != peer) ? peer : MPI_PROC_NULL;
+                int peer_recv = (b2recv != rank) ? peer : MPI_PROC_NULL;
 
                 // Send to my peer a block from the local buffer offsetted by:
                 // b2send * size of block,
