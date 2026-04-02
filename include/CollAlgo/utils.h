@@ -109,3 +109,8 @@ static inline void CA_root_print(const char *msg, int rank, int root) {
         printf("%s\n", msg);
     }
 }
+
+#define CA_MPI_CHECK(call, label) \
+    int _mpi_err = call; \
+    if(_mpi_err) \
+        return _mpi_err

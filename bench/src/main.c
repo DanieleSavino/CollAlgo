@@ -5,6 +5,7 @@
 #include "bench/alltoall.h"
 #include "bench/bcast.h"
 #include "bench/gather.h"
+#include "bench/reduce.h"
 #include "bench/scatter.h"
 #include <mpi.h>
 
@@ -19,6 +20,9 @@ int main(void) {
 
     CA_root_print("Profiling bcast", rank, 0);
     CB_CHECK(CA_bench_bine_bcast_dhlv(), cleanup);
+
+    CA_root_print("Profiling reduce", rank, 0);
+    CB_CHECK(CA_bench_bine_reduce(), cleanup);
 
     CA_root_print("Profiling gatherv", rank, 0);
     CB_CHECK(CA_bench_bine_gatherv(), cleanup);
