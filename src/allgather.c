@@ -53,11 +53,11 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
                 int b2send, b2recv;
 
                 /**
-                 * INFO: Suppose we have a b2recv block = rank
+                 * INFO: Suppose we have a b2recv = rank
                  * then we would have rank + block = rank (mod. size),
                  * so we have that block = size * k | k in N:
-                 *  - n = 0 is prevented by the loop idx starting at 1.
-                 *  - n >= 1 is prevented by the last block being size - 1.
+                 *  - k = 0 is prevented by the loop idx starting at 1.
+                 *  - k >= 1 is prevented by the last block being size - 1.
                  * Same can be said for b2send.
                  */
                 if(rank % 2 == 0) {
