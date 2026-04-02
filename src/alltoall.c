@@ -12,6 +12,7 @@
 int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype, void *recvbuff, int recvcount, MPI_Datatype recvtype, MPI_Comm comm) {
 
     CB_COLL_START();
+        MPI_Request reqs[2];
 
     assert(sendcount == recvcount);
     assert(sendtype == recvtype);
@@ -96,7 +97,6 @@ int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype,
         assert(send_blocks == size/2);
         num_blocks /= 2;
 
-        MPI_Request reqs[2];
         CB_ILSEND(rank, CA_log2(size) - __builtin_popcount(mask_lsbs), recvbuff, sendcount * send_blocks, sendtype, peer, 0, comm, &reqs[0]);
         CB_ILRECV(rank, CA_log2(size) - __builtin_popcount(mask_lsbs), tmpbuff + (size / 2) * sbuff_size, recvcount * send_blocks, recvtype, peer, 0, comm, &reqs[1]);
 
