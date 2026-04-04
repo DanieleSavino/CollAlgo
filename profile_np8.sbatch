@@ -36,12 +36,12 @@ done
 
 for json in out/butterfly/*.json; do
     base=$(basename "$json" .json)
-    for mode in grid overlay butterfly; do
+    for mode in grid overlay butterfly candle ladder; do
         mkdir -p plots/${base}
         python3 ./scripts/butterfly.py "$json" \
             --mode "$mode" \
             --out "plots/${base}/${base}_${mode}.png" \
-            --dpi 600 \
+            --dpi 400 \
             --palette "$PALETTE" \
             --bg "$BG" \
             --node-color "$NODE_COLOR" \

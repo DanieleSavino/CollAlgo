@@ -49,7 +49,7 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
         for(int block = 1; block < size; block++) {
             int k = 31 - __builtin_clz(CA_nu(block, size));
 
-            if(k == step || block == 0) {
+            if(k == step) {
                 int b2send, b2recv;
 
                 /**
@@ -69,10 +69,6 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
                     b2send = CA_mod(peer + block, size);
                 }
 
-                // TODO: Why?
-                int peer_send = (b2send != peer) ? peer : MPI_PROC_NULL;
-                int peer_recv = (b2recv != rank) ? peer : MPI_PROC_NULL;
-
                 // Send to my peer a block from the local buffer offsetted by:
                 // b2send * size of block,
                 CB_ILSEND(
@@ -81,7 +77,7 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
                     (char*)recvbuff + (b2send * sendcount * dtsize),
                     sendcount,
                     sendtype,
-                    peer_send,
+                    peer,
                     0, comm, &reqs[req_idx++]
                 );
 
@@ -93,7 +89,7 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
                     (char*)recvbuff + (b2recv * recvcount * dtsize),
                     recvcount,
                     recvtype,
-                    peer_recv,
+                    peer,
                     0, comm, &reqs[req_idx++]
                 );
             }
