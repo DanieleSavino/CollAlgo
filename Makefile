@@ -62,6 +62,34 @@ lib-debug: $(LIB_DEBUG)
 
 bench: $(BENCH_BIN)
 
+clean-plot:
+	rm -rf plots/
+
+clean-all: clean clean-vendor
+
+rebuild: clean lib
+
+rebuild-all: clean-all
+	$(MAKE) vendor
+	$(MAKE) lib
+
+rebench: clean bench
+
+rebench-all: clean-all
+	$(MAKE) vendor
+	$(MAKE) bench
+
+plot:
+	./profile_np8.sbatch
+
+replot: clean-plot
+	$(MAKE) rebench PROFILE=1
+	$(MAKE) plot
+
+replot-all: clean-plot
+	$(MAKE) rebench-all PROFILE=1
+	$(MAKE) plot
+
 ifeq ($(PROFILE), 1)
 $(BENCH_BIN): $(LIB_PROFILE) $(BENCH_OBJS) | $(BIN_DIR)
 else

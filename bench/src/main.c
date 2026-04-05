@@ -13,7 +13,7 @@ int main(void) {
     CB_Error_t err = CB_SUCCESS;
 
     MPI_Init(NULL, NULL);
-    CB_init();
+    CB_CHECK(CB_init(), cleanup);
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -45,7 +45,7 @@ int main(void) {
     CA_root_print("Profiling Done", rank, 0);
 
     cleanup:
-        CB_finalize();
+        CB_CHECK_RET(CB_finalize());
         MPI_Finalize();
         return err;
 }

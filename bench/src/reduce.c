@@ -15,7 +15,7 @@ int exp_at_idx(int idx, int size) {
     return exp;
 }
 
-int CA_bench_bine_reduce(void) {
+CB_Error_t CA_bench_bine_reduce(void) {
     CB_Error_t err = CB_SUCCESS;
 
     int rank, size;
@@ -35,7 +35,7 @@ int CA_bench_bine_reduce(void) {
         CB_MALLOC(recv_buff, BUFF_SIZE * sizeof(int), cleanup);
     }
 
-    CA_bine_reduce(send_buff, recv_buff, BUFF_SIZE, MPI_INT, MPI_SUM, ROOT, MPI_COMM_WORLD);
+    CB_CHECK(CA_bine_reduce(send_buff, recv_buff, BUFF_SIZE, MPI_INT, MPI_SUM, ROOT, MPI_COMM_WORLD), cleanup);
 
     if(rank == ROOT) {
         for(int i = 0; i < BUFF_SIZE; i++) {

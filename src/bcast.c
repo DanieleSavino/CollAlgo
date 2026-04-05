@@ -41,7 +41,7 @@ int CA_bine_bcast_dhlv(void *buff, int count, MPI_Datatype datatype, int root, M
             CB_LSEND(rank, s - __builtin_popcount(mask_lsbs), buff, count, datatype, peer, 0, comm);
         }
         else {
-            
+
             /**
             * INFO: A rank receives if its steps least significant bits are all equal
             * (all 0s or all 1s). We check this with lsb_mask:
