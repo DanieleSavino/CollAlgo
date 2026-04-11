@@ -7,7 +7,6 @@
 #include <string.h>
 
 int CA_bine_reduce(const void *sendbuff, void *recvbuff, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm) {
-    CB_COLL_START();
 
     int rank, size, dtsize;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -17,6 +16,8 @@ int CA_bine_reduce(const void *sendbuff, void *recvbuff, int count, MPI_Datatype
     if(!CA_is_pow_2(size)) {
         return MPI_ERR_ASSERT;
     }
+
+    CB_COLL_START();
 
     char *tmpbuff;
     CA_MALLOC(tmpbuff, count * dtsize);

@@ -12,8 +12,6 @@
 #include <string.h>
 
 int CA_bine_scatterv(const void *sendbuff, int *sendcounts, const int *displs, MPI_Datatype sendtype, void *recvbuff, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm) {
-    CB_COLL_START();
-
     assert(sendtype == recvtype);
 
     (void)recvcount;
@@ -26,6 +24,8 @@ int CA_bine_scatterv(const void *sendbuff, int *sendcounts, const int *displs, M
     if(!CA_is_pow_2(size)) {
         return MPI_ERR_ASSERT;
     }
+
+    CB_COLL_START();
 
     int s = ceil(log2(size));
 
