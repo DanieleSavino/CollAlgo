@@ -10,8 +10,6 @@
 
 int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype sendtype, void *recvbuff, int recvcount, MPI_Datatype recvtype, MPI_Comm comm) {
 
-    CB_COLL_START();
-
     assert(sendcount == recvcount);
     assert(recvtype == sendtype);
 
@@ -23,6 +21,8 @@ int CA_bine_allgather_b2b(const void *sendbuff, int sendcount, MPI_Datatype send
     if(size % 2) {
         return MPI_ERR_ASSERT;
     }
+
+    CB_COLL_START();
 
     memcpy((char*) recvbuff + rank * recvcount * dtsize, sendbuff, sendcount * dtsize);
 

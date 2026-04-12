@@ -7,7 +7,6 @@
 #include <mpi.h>
 
 int CA_bine_bcast_dhlv(void *buff, int count, MPI_Datatype datatype, int root, MPI_Comm comm) {
-    CB_COLL_START();
 
     int rank, size;
     MPI_Comm_rank(comm, &rank);
@@ -16,6 +15,8 @@ int CA_bine_bcast_dhlv(void *buff, int count, MPI_Datatype datatype, int root, M
     if(!CA_is_pow_2(size)) {
         return MPI_ERR_ASSERT;
     }
+
+    CB_COLL_START();
 
     int s = log2(size);
     int mask = 1 << (s - 1);

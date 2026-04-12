@@ -13,8 +13,6 @@
 
 int CA_bine_gatherv(const void *sendbuff, int sendcount, MPI_Datatype sendtype, void *recvbuff, int *recvcounts, const int *displs, MPI_Datatype recvtype, int root, MPI_Comm comm) {
 
-    CB_COLL_START();
-
     assert(sendtype == recvtype);
 
     int rank, size, dtsize;
@@ -25,6 +23,8 @@ int CA_bine_gatherv(const void *sendbuff, int sendcount, MPI_Datatype sendtype, 
     if(!CA_is_pow_2(size)) {
         return MPI_ERR_ASSERT;
     }
+
+    CB_COLL_START();
 
     // Allocate full buffer data
     if (rank != root)
@@ -157,8 +157,6 @@ int CA_bine_gatherv(const void *sendbuff, int sendcount, MPI_Datatype sendtype, 
 
 int CA_bine_gather(const void *sendbuff, int sendcount, MPI_Datatype sendtype, void *recvbuff, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm) {
 
-    CB_COLL_START();
-
     assert(sendtype == recvtype);
 
     int rank, size, dtsize;
@@ -169,6 +167,8 @@ int CA_bine_gather(const void *sendbuff, int sendcount, MPI_Datatype sendtype, v
     if(!CA_is_pow_2(size)) {
         return MPI_ERR_ASSERT;
     }
+
+    CB_COLL_START();
 
     if (rank != root)
         CA_MALLOC(recvbuff, size * dtsize * recvcount);

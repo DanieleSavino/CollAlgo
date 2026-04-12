@@ -9,6 +9,10 @@
 #include "bench/scatter.h"
 #include <mpi.h>
 
+#ifdef CA_CUDA
+    #include "bench/cuda/reduce.h"
+#endif
+
 int main(void) {
     CB_Error_t err = CB_SUCCESS;
 
@@ -41,6 +45,11 @@ int main(void) {
 
     CA_root_print("Profiling alltoall", rank, 0);
     CB_CHECK(CA_bench_bine_alltoall(), cleanup);
+
+#ifdef CA_CUDA
+    CA_root_print("Profiling reduce cuda", rank, 0);
+    CB_CHECK(CA_bench_bine_reduce_cuda(), cleanup);
+#endif
 
     CA_root_print("Profiling Done", rank, 0);
 

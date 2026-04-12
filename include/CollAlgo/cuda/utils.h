@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CollBench/errors.h"
+#include <cuda_runtime.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-NODISCARD CB_Error_t CA_bench_bine_alltoall(void);
+int _CA_cuda_is_devptr(const void *ptr);
 
 #ifdef __cplusplus
 }

@@ -12,4 +12,6 @@ out/
 __pycache__/
 *.pyc
 .venv/
+
 *.json
+.clangd

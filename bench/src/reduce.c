@@ -56,3 +56,4 @@ CB_Error_t CA_bench_bine_reduce(void) {
     return err;
 
 }
+
