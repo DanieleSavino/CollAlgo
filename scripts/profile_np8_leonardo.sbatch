@@ -11,13 +11,16 @@
 #SBATCH --output=out/out
 #SBATCH --error=out/err
 
-# ── Directories ───────────────────────────────────────────────────────────────
+export UCX_WARN_UNUSED_ENV_VARS=n
+export UCX_TLS=^gdr_copy
+
+#── Directories ───────────────────────────────────────────────────────────────
 mkdir -p out/tree out/butterfly plots
 
 # ── Build & run ───────────────────────────────────────────────────────────────
 cmake -B build -DCA_PROFILE=ON -DCA_CUDA=ON
 cmake --build build --parallel
-mpirun -np 8 ./build/bin/bench
+srun -n 8 ./build/bin/bench
 
 # ── Plot style ────────────────────────────────────────────────────────────────
 PALETTE="#00C2D4,#7B5EA7,#E8593C,#F2A623,#1D9E75,#D4537E,#5B8FF9,#A0D911,#FF9F7F,#B37FEB"
