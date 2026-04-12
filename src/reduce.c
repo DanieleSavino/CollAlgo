@@ -4,9 +4,32 @@
 #include "CollBench/dist_list.h"
 #include "CollBench/init.h"
 #include <mpi.h>
-#include <string.h>
+#include <stddef.h>
+
+#ifdef  CA_CUDA
+    #include "CollAlgo/cuda/reduce.h"
+#endif
+
+int local_reduce(const void *src, void *dst, int count, MPI_Datatype dt, MPI_Op op, int cuda) {
+    #ifdef CA_CUDA
+    if(cuda) {
+        CA_cuda_reduce(src, dst, count, dt, op, 32);
+        return 0;
+    }
+    #endif
+
+    CA_MPI_CHECK(MPI_Reduce_local(src, dst, count, dt, op));
+
+    return 0;
+}
 
 int CA_bine_reduce(const void *sendbuff, void *recvbuff, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm) {
+
+#ifdef CA_CUDA
+    int use_cuda = CA_is_devptr(sendbuff);
+#else
+    int use_cuda = 0;
+#endif
 
     int rank, size, dtsize;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -20,13 +43,13 @@ int CA_bine_reduce(const void *sendbuff, void *recvbuff, int count, MPI_Datatype
     CB_COLL_START();
 
     char *tmpbuff;
-    CA_MALLOC(tmpbuff, count * dtsize);
+    CA_UMALLOC(tmpbuff, count * dtsize, use_cuda);
 
     if(rank != root) {
-        CA_MALLOC(recvbuff, count * dtsize);
+        CA_UMALLOC(recvbuff, count * dtsize, use_cuda);
     }
 
-    memcpy(recvbuff, sendbuff, count * dtsize);
+    CA_UMEMCPY(recvbuff, sendbuff, count * dtsize, use_cuda);
 
     int s = CA_log2(size);
 
@@ -50,14 +73,14 @@ int CA_bine_reduce(const void *sendbuff, void *recvbuff, int count, MPI_Datatype
         }
         else {
             CB_LRECV(rank, __builtin_popcount(mask_peer), tmpbuff, count, datatype, peer, 0, comm);
-            CA_MPI_CHECK(MPI_Reduce_local(tmpbuff, recvbuff, count, datatype, op), cleanup);
+            local_reduce(tmpbuff, recvbuff, count, datatype, op, use_cuda);
         }
         mask <<= 1;
     }
 
-    free(tmpbuff);
+    CA_UFREE(tmpbuff, use_cuda);
     if(rank != root) {
-        free(recvbuff);
+        CA_UFREE(recvbuff, use_cuda);
     }
 
     CB_COLL_END(comm, rank, root, "out/tree/bine_reduce.json");

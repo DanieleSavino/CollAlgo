@@ -15,30 +15,11 @@
 #pragma once
 #include <mpi.h>
 #include <stdio.h>
+#include <string.h>
 
-/**
- * @brief Allocates memory and aborts the MPI job on failure.
- *
- * Wraps @c malloc with an MPI-aware error handler. If the allocation fails,
- * @c MPI_Abort is called on @c MPI_COMM_WORLD with @c MPI_ERR_NO_MEM,
- * terminating all ranks cleanly instead of continuing with a NULL pointer.
- *
- * @param ptr  L-value of pointer type that will receive the allocated address.
- * @param size Number of bytes to allocate.
- *
- * @note Expands to a @c do { } @c while(0) block so it is safe to use as a
- *       statement in all contexts (e.g., after a bare @c if).
- *
- * @warning @p ptr must be a valid lvalue — passing an expression with
- *          side-effects may produce unexpected behaviour.
- */
-#define CA_MALLOC(ptr, size) \
-    do { \
-        ptr = malloc(size); \
-        if(!ptr) { \
-            MPI_Abort(MPI_COMM_WORLD, MPI_ERR_NO_MEM); \
-        } \
-    } while(0)
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief Computes the non-negative remainder of @p a divided by @p b.
@@ -110,7 +91,138 @@ static inline void CA_root_print(const char *msg, int rank, int root) {
     }
 }
 
-#define CA_MPI_CHECK(call, label) \
-    int _mpi_err = call; \
-    if(_mpi_err) \
-        return _mpi_err
+#ifdef CA_CUDA
+    #include "CollAlgo/cuda/utils.h"
+#endif
+
+static inline int CA_is_devptr(const void *ptr) {
+#ifdef CA_CUDA
+    return _CA_cuda_is_devptr(ptr);
+#endif
+
+    (void)ptr;
+    return 0;
+}
+
+
+// ── Error-check macros ────────────────────────────────────────────────────────
+
+#define CA_MPI_CHECK(call) \
+    do { \
+        int _err = (call); \
+        if (_err != MPI_SUCCESS) { \
+            fprintf(stderr, "[MPI error] %s:%d: %d\n", __FILE__, __LINE__, _err); \
+            return _err; \
+        } \
+    } while(0)
+
+#define CA_MPI_CHECK_LABEL(call, label) \
+    do { \
+        int _err = (call); \
+        if (_err != MPI_SUCCESS) { \
+            fprintf(stderr, "[MPI error] %s:%d: %d\n", __FILE__, __LINE__, _err); \
+            goto label; \
+        } \
+    } while(0)
+
+#ifdef CA_CUDA
+#define CA_CUDA_CHECK(call) \
+    do { \
+        cudaError_t _err = (call); \
+        if (_err != cudaSuccess) { \
+            fprintf(stderr, "[CUDA error] %s:%d: %s\n", \
+                __FILE__, __LINE__, cudaGetErrorString(_err)); \
+            MPI_Abort(MPI_COMM_WORLD, 1); \
+        } \
+    } while(0)
+
+#define CA_CUDA_CHECK_LABEL(call, label) \
+    do { \
+        cudaError_t _err = (call); \
+        if (_err != cudaSuccess) { \
+            fprintf(stderr, "[CUDA error] %s:%d: %s\n", \
+                __FILE__, __LINE__, cudaGetErrorString(_err)); \
+            goto label; \
+        } \
+    } while(0)
+#endif
+
+// ── Allocation macros ─────────────────────────────────────────────────────────
+
+#define CA_MALLOC(ptr, size) \
+    do { \
+        (ptr) = malloc(size); \
+        if (!(ptr)) { \
+            fprintf(stderr, "[OOM] %s:%d: malloc(%zu) failed\n", \
+                __FILE__, __LINE__, (size_t)(size)); \
+            MPI_Abort(MPI_COMM_WORLD, MPI_ERR_NO_MEM); \
+        } \
+    } while(0)
+
+#define CA_MALLOC_LABEL(ptr, size, label) \
+    do { \
+        (ptr) = malloc(size); \
+        if (!(ptr)) { \
+            fprintf(stderr, "[OOM] %s:%d: malloc(%zu) failed\n", \
+                __FILE__, __LINE__, (size_t)(size)); \
+            goto label; \
+        } \
+    } while(0)
+
+#ifdef CA_CUDA
+#define CA_CUDA_MALLOC(ptr, size) \
+    CA_CUDA_CHECK(cudaMalloc((void **)&(ptr), (size)))
+
+#define CA_CUDA_MALLOC_LABEL(ptr, size, label) \
+    CA_CUDA_CHECK_LABEL(cudaMalloc((void **)&(ptr), (size)), label)
+
+// ── Unified host/device macros (require int use_cuda in scope) ────────────────
+
+#define CA_UMALLOC(ptr, size, use_cuda) \
+    do { \
+        if (use_cuda) { CA_CUDA_MALLOC(ptr, size); } \
+        else          { CA_MALLOC(ptr, size); } \
+    } while(0)
+
+#define CA_UMALLOC_LABEL(ptr, size, use_cuda, label) \
+    do { \
+        if (use_cuda) { CA_CUDA_MALLOC_LABEL(ptr, size, label); } \
+        else          { CA_MALLOC_LABEL(ptr, size, label); } \
+    } while(0)
+
+#define CA_UFREE(ptr, use_cuda) \
+    do { \
+        if (use_cuda) { cudaFree(ptr); } \
+        else          { free(ptr); } \
+    } while(0)
+
+#define CA_UMEMCPY(dst, src, size, use_cuda) \
+    do { \
+        if (use_cuda) { \
+            CA_CUDA_CHECK(cudaMemcpy(dst, src, size, cudaMemcpyDeviceToDevice)); \
+        } else { \
+            memcpy(dst, src, size); \
+        } \
+    } while(0)
+
+#define CA_UMEMCPY_LABEL(dst, src, size, use_cuda, label) \
+    do { \
+        if (use_cuda) { \
+            CA_CUDA_CHECK_LABEL(cudaMemcpy(dst, src, size, cudaMemcpyDeviceToDevice), label); \
+        } else { \
+            memcpy(dst, src, size); \
+        } \
+    } while(0)
+
+#else
+// No-CUDA fallbacks — use_cuda is always 0 so these collapse to host ops
+#define CA_UMALLOC(ptr, size, use_cuda)              CA_MALLOC(ptr, size)
+#define CA_UMALLOC_LABEL(ptr, size, use_cuda, label) CA_MALLOC_LABEL(ptr, size, label)
+#define CA_UFREE(ptr, use_cuda)                      free(ptr)
+#define CA_UMEMCPY(dst, src, size, use_cuda)         memcpy(dst, src, size)
+#define CA_UMEMCPY_LABEL(dst, src, size, use_cuda, label) memcpy(dst, src, size)
+#endif
+
+#ifdef __cplusplus
+}
+#endif

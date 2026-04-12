@@ -18,6 +18,10 @@
 #include <assert.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @brief Maximum number of BINE butterfly steps supported. */
 #define BINE_MAX_STEPS 20
 
@@ -365,3 +369,7 @@ static inline int CA_remap_ddbl(uint32_t num) {
     }
     return remapped;
 }
+
+#ifdef __cplusplus
+}
+#endif
