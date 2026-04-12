@@ -1,0 +1,34 @@
+[1775993073.081331] [lrdn0026:248337:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.109225] [lrdn0026:248337:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.127230] [lrdn0026:248337:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.127233] [lrdn0026:248337:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.194143] [lrdn0026:248337:0]          parser.c:2363 UCX  WARN  unused environment variable: UCX_HOME
+[1775993073.194143] [lrdn0026:248337:0]          parser.c:2363 UCX  WARN  (set UCX_WARN_UNUSED_ENV_VARS=n to suppress this warning)
+[1775993073.085978] [lrdn0036:2093923:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.113754] [lrdn0036:2093923:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.131945] [lrdn0036:2093923:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.131948] [lrdn0036:2093923:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.199338] [lrdn0036:2093923:0]          parser.c:2363 UCX  WARN  unused environment variable: UCX_HOME
+[1775993073.199338] [lrdn0036:2093923:0]          parser.c:2363 UCX  WARN  (set UCX_WARN_UNUSED_ENV_VARS=n to suppress this warning)
+[1775993073.284805] [lrdn0013:4057388:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.312961] [lrdn0013:4057388:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.356714] [lrdn0013:4057388:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.356717] [lrdn0013:4057388:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.435916] [lrdn0013:4057388:0]          parser.c:2363 UCX  WARN  unused environment variable: UCX_HOME
+[1775993073.435916] [lrdn0013:4057388:0]          parser.c:2363 UCX  WARN  (set UCX_WARN_UNUSED_ENV_VARS=n to suppress this warning)
+[1775993073.213328] [lrdn0012:110102:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.241656] [lrdn0012:110102:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.286947] [lrdn0012:110102:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.286950] [lrdn0012:110102:0]     gdr_copy_md.c:284  UCX  WARN  could not open gdr copy, built for v2.5 but loaded v2.2
+[1775993073.364820] [lrdn0012:110102:0]          parser.c:2363 UCX  WARN  unused environment variable: UCX_HOME
+[1775993073.364820] [lrdn0012:110102:0]          parser.c:2363 UCX  WARN  (set UCX_WARN_UNUSED_ENV_VARS=n to suppress this warning)
+Profiling bcast
+Profiling reduce
+Profiling reduce cuda
+Profiling gatherv
+Profiling gather
+Profiling scatter
+Profiling scatterv
+Profiling allgather
+Profiling alltoall
+Profiling Done
