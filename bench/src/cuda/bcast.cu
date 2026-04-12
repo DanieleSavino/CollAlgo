@@ -41,6 +41,8 @@ NODISCARD CB_Error_t CA_bench_bine_bcast_dhlv_cuda(void) {
     CA_CUDA_MALLOC(d_errors, sizeof(int));
     check_kernel<<<blocks, threads>>>(buff, BUFF_LEN, d_errors);
 
+    CA_CUDA_CHECK(cudaDeviceSynchronize());
+
     CA_CUDA_CHECK(cudaMemcpy(&h_errors, d_errors, sizeof(int), cudaMemcpyDeviceToHost));
 
     if(h_errors > 0) {
