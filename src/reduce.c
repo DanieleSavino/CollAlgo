@@ -11,12 +11,13 @@
 #endif
 
 int local_reduce(const void *src, void *dst, int count, MPI_Datatype dt, MPI_Op op, int cuda) {
-    #ifdef CA_CUDA
+
+#ifdef CA_CUDA
     if(cuda) {
         CA_cuda_reduce(src, dst, count, dt, op, 32);
         return 0;
     }
-    #endif
+#endif
 
     CA_MPI_CHECK(MPI_Reduce_local(src, dst, count, dt, op));
 
@@ -83,6 +84,6 @@ int CA_bine_reduce(const void *sendbuff, void *recvbuff, int count, MPI_Datatype
         CA_UFREE(recvbuff, use_cuda);
     }
 
-    CB_COLL_END(comm, rank, root, "out/tree/bine_reduce.json");
+    CB_COLL_END(comm, rank, root, use_cuda ? "out/tree/bine_reduce_cuda.json" : "out/tree/bine_reduce.json");
     return MPI_SUCCESS;
 }

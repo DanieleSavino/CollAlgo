@@ -28,9 +28,6 @@ int main(void) {
     CA_root_print("Profiling reduce", rank, 0);
     CB_CHECK(CA_bench_bine_reduce(), cleanup);
 
-    CA_root_print("Profiling reduce cuda", rank, 0);
-    CB_CHECK(CA_bench_bine_reduce_cuda(), cleanup);
-
     CA_root_print("Profiling gatherv", rank, 0);
     CB_CHECK(CA_bench_bine_gatherv(), cleanup);
 
@@ -48,6 +45,11 @@ int main(void) {
 
     CA_root_print("Profiling alltoall", rank, 0);
     CB_CHECK(CA_bench_bine_alltoall(), cleanup);
+
+#ifdef CA_CUDA
+    CA_root_print("Profiling reduce cuda", rank, 0);
+    CB_CHECK(CA_bench_bine_reduce_cuda(), cleanup);
+#endif
 
     CA_root_print("Profiling Done", rank, 0);
 
