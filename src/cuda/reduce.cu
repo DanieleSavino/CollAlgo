@@ -47,4 +47,6 @@ int CA_cuda_reduce(const void *src, void *dst, int count,
     else if (op == MPI_BOR)  { DISPATCH_TYPE(OpBor);  }
     else if (op == MPI_BXOR) { DISPATCH_TYPE(OpBxor); }
     else return 1;
+
+    CA_CUDA_CHECK(cudaDeviceSynchronize());
 }
