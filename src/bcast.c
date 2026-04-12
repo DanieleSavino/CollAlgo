@@ -8,6 +8,12 @@
 
 int CA_bine_bcast_dhlv(void *buff, int count, MPI_Datatype datatype, int root, MPI_Comm comm) {
 
+#ifdef CA_CUDA
+    int use_cuda = CA_is_devptr(buff);
+#else
+    int use_cuda = 0;
+#endif
+
     int rank, size;
     MPI_Comm_rank(comm, &rank);
     MPI_Comm_size(comm, &size);
@@ -60,7 +66,7 @@ int CA_bine_bcast_dhlv(void *buff, int count, MPI_Datatype datatype, int root, M
         mask >>= 1;
     }
 
-    CB_COLL_END(comm, rank, root, "out/tree/bine_bcast_dhlv.json");
+    CB_COLL_END(comm, rank, root, use_cuda ? "out/tree/bine_bcast_dhlv_cuda.json" : "out/tree/bine_bcast_dhlv_cuda.json");
 
     return MPI_SUCCESS;
 }
