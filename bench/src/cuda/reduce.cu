@@ -52,6 +52,7 @@ CB_Error_t CA_bench_bine_reduce_cuda(void) {
         CA_CUDA_MALLOC(d_errors, sizeof(int));
         CA_CUDA_CHECK(cudaMemset(d_errors, 0, sizeof(int)));
         CA_bench_reduce_check_cuda(recv_buff, size, BUFF_SIZE, d_errors);
+        cudaDeviceSynchronize();
         int h_errors = 0;
         CA_CUDA_CHECK(cudaMemcpy(&h_errors, d_errors, sizeof(int),
                                        cudaMemcpyDeviceToHost));
