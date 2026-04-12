@@ -14,6 +14,12 @@
 export UCX_WARN_UNUSED_ENV_VARS=n
 export UCX_TLS=^gdr_copy
 
+module purge
+module load cuda/12.2
+module load cmake/3.27.9
+module load gcc/12.2.0
+module load openmpi/5.0.9--gcc--12.2.0-cuda-12.2
+
 #── Directories ───────────────────────────────────────────────────────────────
 mkdir -p out/tree out/butterfly plots
 

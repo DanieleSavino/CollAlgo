@@ -116,6 +116,15 @@ static inline int CA_is_devptr(const void *ptr) {
         } \
     } while(0)
 
+#define CA_MPI_CHECK_ABORT(call) \
+    do { \
+        int _err = (call); \
+        if (_err != MPI_SUCCESS) { \
+            fprintf(stderr, "[MPI error] %s:%d: %d\n", __FILE__, __LINE__, _err); \
+            MPI_Abort(MPI_COMM_WORLD, 1); \
+        } \
+    } while(0)
+
 #define CA_MPI_CHECK_LABEL(call, label) \
     do { \
         int _err = (call); \

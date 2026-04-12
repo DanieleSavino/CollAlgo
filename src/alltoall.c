@@ -92,6 +92,7 @@ int CA_bine_alltoall(const void *sendbuff, int sendcount, MPI_Datatype sendtype,
             }
         }
 
+        (void)recv_blocks;
         assert(recv_blocks == size/2);
         assert(send_blocks == size/2);
         num_blocks /= 2;
