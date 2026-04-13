@@ -66,7 +66,8 @@ int CA_bine_bcast_dhlv(void *buff, int count, MPI_Datatype datatype, int root, M
         mask >>= 1;
     }
 
-    CB_COLL_END(comm, rank, root, use_cuda ? "out/tree/bine_bcast_dhlv_cuda.json" : "out/tree/bine_bcast_dhlv_cuda.json");
+    (void)use_cuda;
+    CB_COLL_END(comm, rank, root, use_cuda ? "out/tree/bine_bcast_dhlv_cuda.json" : "out/tree/bine_bcast_dhlv.json");
 
     return MPI_SUCCESS;
 }

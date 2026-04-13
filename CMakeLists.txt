@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(CollAlgo C)
+project(CollAlgo C CUDA)
 option(CA_CUDA    "Build with CUDA support"   OFF)
 option(CA_PROFILE "Build with CB_PROFILE set" OFF)
 set(CMAKE_C_STANDARD 11)
@@ -73,6 +73,7 @@ function(configure_collalgo_target target profile)
     if(CA_CUDA)
         target_link_libraries(${target} PUBLIC CUDA::cudart)
         set_target_properties(${target} PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+        target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppress=128>)
     endif()
     target_link_libraries(${target} PUBLIC MPI::MPI_C)
 endfunction()
@@ -92,6 +93,9 @@ target_compile_options(bench PRIVATE
     $<$<COMPILE_LANGUAGE:C>:${WARN_OPTIONS}>
     $<$<NOT:$<CONFIG:Debug>>:-march=native>
 )
+if(CA_CUDA)
+    target_compile_options(bench PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppress=128>)
+endif()
 target_compile_definitions(bench PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
     $<$<NOT:$<CONFIG:Debug>>:NDEBUG>

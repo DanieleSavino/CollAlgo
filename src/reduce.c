@@ -17,6 +17,8 @@ int local_reduce(const void *src, void *dst, int count, MPI_Datatype dt, MPI_Op 
         CA_cuda_reduce(src, dst, count, dt, op, 32);
         return 0;
     }
+#else
+    (void)cuda;
 #endif
 
     CA_MPI_CHECK(MPI_Reduce_local(src, dst, count, dt, op));

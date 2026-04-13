@@ -1,4 +1,5 @@
 #include "CollAlgo/cuda/reduce.h"
+#include "CollAlgo/utils.h"
 
 struct OpSum  { template<typename T> __device__ static T apply(T a, T b) { return a + b; } };
 struct OpProd { template<typename T> __device__ static T apply(T a, T b) { return a * b; } };
@@ -49,4 +50,5 @@ int CA_cuda_reduce(const void *src, void *dst, int count,
     else return 1;
 
     CA_CUDA_CHECK(cudaDeviceSynchronize());
+    return 0;
 }
